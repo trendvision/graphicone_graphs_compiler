@@ -9,7 +9,7 @@ setup(
         'git+https://github.com/trendvision/graphicone_social_relations.git#egg=graphicone_social_relations'
     ],
     install_requires=['sqlalchemy', 'graphicone_models', 'graphicone_social_relations'],
-    version='0.1',
+    version='0.1.1',
     license='TRV',
     description='creation graphs models',
 )
