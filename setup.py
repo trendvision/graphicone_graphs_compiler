@@ -7,7 +7,7 @@ setup(
     install_requires=[
         'sqlalchemy'
         'graphicone_models @ git+https://github.com/trendvision/graphicone_models.git@v0.1#egg=graphicone_models',
-        'graphicone_social_relations @ git+https://github.com/trendvision/graphicone_social_relations.git@v0.1.1#egg=graphicone_social_relations'
+        'graphicone_social_relations @ git+https://github.com/trendvision/graphicone_social_relations.git@v0.1#egg=graphicone_social_relations'
     ],
     version='0.1.1',
     license='TRV',
