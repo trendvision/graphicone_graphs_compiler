@@ -121,3 +121,19 @@ def get_boards_graphs(db: Session, board_id: str, username: str):
     ).order_by(models.Graph.publish_date.desc()).all()
 
     return get_full_graphs_objects_from_graphs_records(db, graph_records, username)
+
+
+def get_web_site_graphs(graph_records):
+    result = []
+
+    for graph in graph_records:
+        graph_item = dict(
+            id=graph.id,
+            small=graph.link_small[0],
+            medium=graph.link_medium[0],
+            large=graph.link_large[0],
+            tags=[dict(id=tag_record.graph_id, name=tag_record.value) for tag_record in graph.tags]
+        )
+        result.append(graph_item)
+
+    return result
