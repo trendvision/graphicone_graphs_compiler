@@ -66,7 +66,7 @@ def get_pros_and_cons_for_graph(graph_record):
         fundamental_count_cons
 
 
-def get_full_graphs_objects_from_graphs_records(db, graph_records, username):
+def get_full_graphs_objects_from_graphs_records(db: Session, graph_records, username):
     graphs_answer = list()
 
     for graph_record in graph_records:
@@ -81,6 +81,37 @@ def get_full_graphs_objects_from_graphs_records(db, graph_records, username):
             sentiment_count_pros=sentiment_count_pros,
             fundamental_count_cons=fundamental_count_cons,
             fundamental_count_pros=fundamental_count_pros,
+            description=graph_record.description,
+            equities=[
+                dict(ticker=equity.equity_id, name=equity.equity_data.name)
+                for equity in graph_record.equities if equity.equity_data
+            ],
+            id=graph_record.id,
+            name=graph_record.name,
+            owner=graph_record.owner,
+            publish_date=graph_record.publish_date,
+            source=graph_record.source,
+            tags=[dict(id=tag_record.graph_id, name=tag_record.value) for tag_record in graph_record.tags],
+            image_url=list(
+                map(lambda s, m, l: dict(small=s, medium=m, large=l),
+                    graph_record.link_small, graph_record.link_medium, graph_record.link_large)
+            )
+        )
+        graph['owner']['user_status'] = social.get_user_status(db, username,
+                                                               requested_username=graph['owner']['username'])
+
+        graphs_answer.append(graph)
+
+    return graphs_answer
+
+
+def get_small_graphs_object_from_graphs_records(db: Session, graph_records, username):
+    graphs_answer = list()
+
+    for graph_record in graph_records:
+
+        graph = dict(
+            article_link=graph_record.article_link,
             description=graph_record.description,
             equities=[
                 dict(ticker=equity.equity_id, name=equity.equity_data.name)
