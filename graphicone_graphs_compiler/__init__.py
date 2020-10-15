@@ -66,6 +66,19 @@ def get_pros_and_cons_for_graph(graph_record):
         fundamental_count_cons
 
 
+def get_graph_types(record: models.Graph):
+
+    if record.graph_type:
+        graph_type = record.graph_type
+    else:
+        if record.location in ['COW', 'FOW', 'case study', 'weekend', 'IPO', 'II']:
+            graph_type = record.location
+        else:
+            graph_type = 'feed'
+
+    return graph_type, graph_type
+
+
 def get_full_graphs_objects_from_graphs_records(db: Session, graph_records, username):
     graphs_answer = list()
 
@@ -111,18 +124,10 @@ def get_small_graphs_object_from_graphs_records(db: Session, graph_records, user
     for graph_record in graph_records:
 
         graph = dict(
-            article_link=graph_record.article_link,
-            description=graph_record.description,
-            equities=[
-                dict(ticker=equity.equity_id, name=equity.equity_data.name)
-                for equity in graph_record.equities if equity.equity_data
-            ],
             id=graph_record.id,
             name=graph_record.name,
             owner=graph_record.owner,
             publish_date=graph_record.publish_date,
-            source=graph_record.source,
-            tags=[dict(id=tag_record.graph_id, name=tag_record.value) for tag_record in graph_record.tags],
             image_url=list(
                 map(lambda s, m, l: dict(small=s, medium=m, large=l),
                     graph_record.link_small, graph_record.link_medium, graph_record.link_large)
@@ -168,3 +173,43 @@ def get_web_site_graphs(graph_records):
         result.append(graph_item)
 
     return result
+
+
+def get_grafeed_graphs(db: Session, graph_records: list, username: str):
+    graphs_answer = list()
+
+    for graph_record in graph_records:
+        count_pros, count_cons, sentiment_count_pros, sentiment_count_cons, fundamental_count_pros, \
+            fundamental_count_cons = get_pros_and_cons_for_graph(graph_record)
+
+        graph_type, grafeed_type = get_graph_types(graph_record)
+
+        graph = dict(
+            article_link=graph_record.article_link,
+            count_cons=count_cons,
+            count_pros=count_pros,
+            description=graph_record.description,
+            quiz=dict(),
+            graph_type=graph_type,
+            grafeed_type=grafeed_type,
+            equities=[
+                dict(ticker=equity.equity_id, name=equity.equity_data.name)
+                for equity in graph_record.equities if equity.equity_data
+            ],
+            id=graph_record.id,
+            name=graph_record.name,
+            owner=graph_record.owner,
+            publish_date=graph_record.publish_date,
+            source=graph_record.source,
+            tags=[dict(id=tag_record.graph_id, name=tag_record.value) for tag_record in graph_record.tags],
+            image_url=list(
+                map(lambda s, m, l: dict(small=s, medium=m, large=l),
+                    graph_record.link_small, graph_record.link_medium, graph_record.link_large)
+            )
+        )
+        graph['owner']['user_status'] = social.get_user_status(db, username,
+                                                               requested_username=graph['owner']['username'])
+
+        graphs_answer.append(graph)
+
+    return graphs_answer

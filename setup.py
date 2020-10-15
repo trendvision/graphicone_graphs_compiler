@@ -9,7 +9,7 @@ setup(
         'graphicone_models @ git+https://github.com/trendvision/graphicone_models.git#egg=graphicone_models',
         'graphicone_social_relations @ git+https://github.com/trendvision/graphicone_social_relations.git#egg=graphicone_social_relations'
     ],
-    version='0.1.1',
+    version='0.1.2',
     license='TRV',
     description='creation graphs models',
 )
